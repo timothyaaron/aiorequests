@@ -105,13 +105,15 @@ class HTTPClient(object):
         headers = kwargs.get('headers')
         if headers:
             if isinstance(headers, dict):
-                # h = Headers({})
-                h = None
-                for k, v in headers.iteritems():
+                h = {}
+                for k, v in headers.items():
                     if isinstance(v, str):
-                        h.addRawHeader(k, v)
+                        if k in h:
+                            h[k].append(v)
+                        else:
+                            h[k] = [v]
                     else:
-                        h.setRawHeaders(k, v)
+                        h[k] = v
 
                 headers = h
         else:

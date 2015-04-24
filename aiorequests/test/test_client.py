@@ -234,12 +234,12 @@ class HTTPClientTests(unittest.TestCase):
             'Accept': ['application/json', 'text/plain']
         })
 
-        self.agent.request.assert_called_once_with(
+        aiohttp.request.assert_called_once_with(
             'GET', 'http://example.com/',
-            Headers({'User-Agent': ['treq/0.1dev'],
+            headers={'User-Agent': ['treq/0.1dev'],
                      'accept-encoding': ['gzip'],
-                     'Accept': ['application/json', 'text/plain']}),
-            None)
+                     'Accept': ['application/json', 'text/plain']},
+            data=None)
 
     @with_clock
     def test_request_timeout_fired(self, clock):
