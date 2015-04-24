@@ -26,6 +26,22 @@ class HTTPClientTests(unittest.TestCase):
         # self.MultiPartProducer = self.mbp_patcher.start()
         # self.addCleanup(self.mbp_patcher.stop)
 
+    def mktemp(self):
+            """Returns a unique name that may be used as either a temporary
+        directory or filename.
+
+        @note: you must call os.mkdir on the value returned from this
+               method if you wish to use it as a directory!
+        """
+        MAX_FILENAME = 32 # some platforms limit lengths of filenames
+        base = os.path.join(self.__class__.__module__[:MAX_FILENAME],
+                            self.__class__.__name__[:MAX_FILENAME],
+                            self._testMethodName[:MAX_FILENAME])
+        if not os.path.exists(base):
+            os.makedirs(base)
+        dirname = tempfile.mkdtemp('', '', base)
+        return os.path.join(dirname, 'temp')
+
     def assertBody(self, expected):
         body = self.FileBodyProducer.mock_calls[0][1][0]
         self.assertEqual(body.read(), expected)
@@ -113,12 +129,10 @@ class HTTPClientTests(unittest.TestCase):
 
         self.client.request('POST', 'http://example.com/', data=file(temp_fn))
 
-        self.agent.request.assert_called_once_with(
+        aiohttp.request.assert_called_once_with(
             'POST', 'http://example.com/',
-            Headers({'accept-encoding': ['gzip']}),
-            self.FileBodyProducer.return_value)
-
-        self.assertBody('hello')
+            headers={'accept-encoding': ['gzip']},
+            data='hello')
 
     @mock.patch('aiorequests.client.uuid.uuid4', mock.Mock(return_value="heyDavid"))
     def test_request_no_name_attachment(self):
