@@ -208,10 +208,10 @@ def _convert_files(files):
         * [(param, (file name, content type, producer))]
     """
 
-    if hasattr(files, "iteritems"):
-        files = files.iteritems()
+    if hasattr(files, "items"):
+        files = files.items()
 
-    for param, val in files.items():
+    for param, val in files:
         file_name, content_type, fobj = (None, None, None)
         if isinstance(val, tuple):
             if len(val) == 2:
