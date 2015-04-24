@@ -119,7 +119,6 @@ class HTTPClient(object):
 
         # Here we choose a right producer
         # based on the parameters passed in.
-        bodyProducer = None
         data = kwargs.get('data')
         files = kwargs.get('files')
         if files:
@@ -128,11 +127,15 @@ class HTTPClient(object):
             # with files and/or large objects.
 
             # TODO: Must check multipart aiohttp support
-            data = files
             files = list(_convert_files(files))
             boundary = uuid.uuid4()
             headers['Content-Type'] = ['multipart/form-data; boundary=%s' %
                                        (boundary,)]
+            if data:
+                data = _convert_params(data)
+            else:
+                data = []
+            data += files
         elif data:
             # Otherwise stick to x-www-form-urlencoded format
             # as it's generally faster for smaller requests.
@@ -187,8 +190,8 @@ class HTTPClient(object):
 
 
 def _convert_params(params):
-    if hasattr(params, "iteritems"):
-        return list(sorted(params.iteritems()))
+    if hasattr(params, "items"):
+        return list(sorted(params.items()))
     elif isinstance(params, (tuple, list)):
         return list(params)
     else:
