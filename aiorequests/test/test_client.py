@@ -138,23 +138,16 @@ class HTTPClientTests(unittest.TestCase):
 
     @mock.patch('aiorequests.client.uuid.uuid4', mock.Mock(return_value="heyDavid"))
     def test_request_no_name_attachment(self):
-
+        file = {"name": StringIO("hello")}
         self.client.request(
-            'POST', 'http://example.com/', files={"name": StringIO("hello")})
+            'POST', 'http://example.com/', files=file)
 
-        self.agent.request.assert_called_once_with(
+        aiohttp.request.assert_called_once_with(
             'POST', 'http://example.com/',
-            Headers({
+            headers={
                 'accept-encoding': ['gzip'],
-                'Content-Type': ['multipart/form-data; boundary=heyDavid']}),
-            self.MultiPartProducer.return_value)
-
-        FP = self.FileBodyProducer.return_value
-        self.assertEqual(
-            mock.call(
-                [('name', (None, 'application/octet-stream', FP))],
-                boundary='heyDavid'),
-            self.MultiPartProducer.call_args)
+                'Content-Type': ['multipart/form-data; boundary=heyDavid']},
+            data=file)
 
     @mock.patch('aiorequests.client.uuid.uuid4', mock.Mock(return_value="heyDavid"))
     def test_request_named_attachment(self):

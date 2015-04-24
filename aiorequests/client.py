@@ -126,18 +126,13 @@ class HTTPClient(object):
             # If the files keyword is present we will issue a
             # multipart/form-data request as it suits better for cases
             # with files and/or large objects.
+
+            # TODO: Must check multipart aiohttp support
+            data = files
             files = list(_convert_files(files))
             boundary = uuid.uuid4()
-            headers.setRawHeaders(
-                'content-type', [
-                    'multipart/form-data; boundary=%s' % (boundary,)])
-            if data:
-                data = _convert_params(data)
-            else:
-                data = []
-
-            bodyProducer = multipart.MultiPartProducer(
-                data + files, boundary=boundary)
+            headers['Content-Type'] = ['multipart/form-data; boundary=%s' %
+                                       (boundary,)]
         elif data:
             # Otherwise stick to x-www-form-urlencoded format
             # as it's generally faster for smaller requests.
@@ -199,7 +194,6 @@ def _convert_params(params):
     else:
         raise ValueError("Unsupported format")
 
-
 def _convert_files(files):
     """Files can be passed in a variety of formats:
 
@@ -217,7 +211,7 @@ def _convert_files(files):
     if hasattr(files, "iteritems"):
         files = files.iteritems()
 
-    for param, val in files:
+    for param, val in files.items():
         file_name, content_type, fobj = (None, None, None)
         if isinstance(val, tuple):
             if len(val) == 2:
@@ -232,7 +226,7 @@ def _convert_files(files):
         if not content_type:
             content_type = _guess_content_type(file_name)
 
-        yield (param, (file_name, content_type, IBodyProducer(fobj)))
+        yield (param, (file_name, content_type, fobj))
 
 
 def _combine_query_params(url, params):
