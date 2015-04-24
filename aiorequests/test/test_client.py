@@ -64,9 +64,9 @@ class HTTPClientTests(unittest.TestCase):
         self.client.request('GET', 'http://example.com/?baz=bax',
                             params=[('foo', 'bar')])
 
-        self.agent.request.assert_called_once_with(
+        aiohttp.request.assert_called_once_with(
             'GET', 'http://example.com/?baz=bax&foo=bar',
-            Headers({'accept-encoding': ['gzip']}), None)
+            headers={'accept-encoding': ['gzip']})
 
     def test_request_dict_single_value_query_params(self):
         self.client.request('GET', 'http://example.com/',
