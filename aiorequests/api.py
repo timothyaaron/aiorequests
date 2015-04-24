@@ -1,4 +1,4 @@
-from twisted.web.client import Agent
+import aiohttp
 
 from treq.client import HTTPClient
 from treq._utils import default_pool, default_reactor
