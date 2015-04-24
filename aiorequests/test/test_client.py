@@ -89,13 +89,11 @@ class HTTPClientTests(unittest.TestCase):
         self.client.request('POST', 'http://example.com/',
                             data={'foo': 'bar'})
 
-        self.agent.request.assert_called_once_with(
+        aiohttp.request.assert_called_once_with(
             'POST', 'http://example.com/',
-            Headers({'Content-Type': ['application/x-www-form-urlencoded'],
-                     'accept-encoding': ['gzip']}),
-            self.FileBodyProducer.return_value)
-
-        self.assertBody('foo=bar')
+            headers={'Content-Type': ['application/x-www-form-urlencoded'],
+                     'accept-encoding': ['gzip']},
+            data='foo=bar')
 
     def test_request_data_tuple(self):
         self.client.request('POST', 'http://example.com/',
