@@ -1,4 +1,3 @@
-from twisted.web.http_headers import Headers
 import base64
 
 

@@ -1,7 +1,7 @@
 import aiohttp
 
-from treq.client import HTTPClient
-from treq._utils import default_pool, default_reactor
+from aiorequests.client import HTTPClient
+from aiorequests._utils import default_pool, default_loop
 
 
 def head(url, **kwargs):
@@ -106,7 +106,7 @@ def request(method, url, **kwargs):
 #
 
 def _client(*args, **kwargs):
-    reactor = default_reactor(kwargs.get('reactor'))
+    reactor = default_loop(kwargs.get('reactor'))
     pool = default_pool(reactor,
                         kwargs.get('pool'),
                         kwargs.get('persistent'))

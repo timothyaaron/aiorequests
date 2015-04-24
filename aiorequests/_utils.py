@@ -1,17 +1,14 @@
 """
 Strictly internal utilities.
 """
-from twisted.web.client import HTTPConnectionPool
 
+import asyncio
 
-def default_reactor(reactor):
+def default_loop(loop):
     """
-    Return the specified reactor or the default.
+    Return the specified loop or the default.
     """
-    if reactor is None:
-        from twisted.internet import reactor
-
-    return reactor
+    return loop
 
 
 _global_pool = [None]
@@ -25,20 +22,20 @@ def set_global_pool(pool):
     _global_pool[0] = pool
 
 
-def default_pool(reactor, pool, persistent):
+def default_pool(loop, pool, persistent):
     """
-    Return the specified pool or a a pool with the specified reactor and
+    Return the specified pool or a a pool with the specified loop and
     persistence.
     """
-    reactor = default_reactor(reactor)
+    loop = default_loop(loop)
 
     if pool is not None:
         return pool
 
     if persistent is False:
-        return HTTPConnectionPool(reactor, persistent=persistent)
+        return HTTPConnectionPool(loop, persistent=persistent)
 
     if get_global_pool() is None:
-        set_global_pool(HTTPConnectionPool(reactor, persistent=True))
+        set_global_pool(HTTPConnectionPool(loop, persistent=True))
 
     return get_global_pool()

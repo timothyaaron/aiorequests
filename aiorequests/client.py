@@ -1,40 +1,21 @@
 import mimetypes
 import uuid
 
-from io import BytesIO
-from StringIO import StringIO
+from io import BytesIO, StringIO
 from os import path
 
-from urlparse import urlparse, urlunparse
-from urllib import urlencode
+from urllib.parse import urlparse, urlunparse, urlencode
 
-from twisted.internet.interfaces import IProtocol
-from twisted.internet.defer import Deferred
-from twisted.python.components import proxyForInterface
+from aiorequests._utils import default_loop
+from aiorequests.auth import add_auth
+# from aiorequests import multipart
+from aiorequests.response import _Response
 
-from twisted.web.http_headers import Headers
-from twisted.web.iweb import IBodyProducer, IResponse
-
-from twisted.web.client import (
-    FileBodyProducer,
-    RedirectAgent,
-    ContentDecoderAgent,
-    GzipDecoder,
-    CookieAgent
-)
-
-from twisted.python.components import registerAdapter
-
-from treq._utils import default_reactor
-from treq.auth import add_auth
-from treq import multipart
-from treq.response import _Response
-
-from cookielib import CookieJar
+from http.cookiejar import CookieJar
 from requests.cookies import cookiejar_from_dict, merge_cookies
 
 
-class _BodyBufferingProtocol(proxyForInterface(IProtocol)):
+class _BodyBufferingProtocol(object):
     def __init__(self, original, buffer, finished):
         self.original = original
         self.buffer = buffer
@@ -49,7 +30,7 @@ class _BodyBufferingProtocol(proxyForInterface(IProtocol)):
         self.finished.errback(reason)
 
 
-class _BufferedResponse(proxyForInterface(IResponse)):
+class _BufferedResponse(object):
     def __init__(self, original):
         self.original = original
         self._buffer = []
@@ -188,7 +169,7 @@ class HTTPClient(object):
 
         timeout = kwargs.get('timeout')
         if timeout:
-            delayedCall = default_reactor(kwargs.get('reactor')).callLater(
+            delayedCall = default_loop(kwargs.get('reactor')).callLater(
                 timeout, d.cancel)
 
             def gotResult(result):
@@ -277,9 +258,3 @@ def _guess_content_type(filename):
     else:
         guessed = None
     return guessed or 'application/octet-stream'
-
-
-registerAdapter(_from_bytes, str, IBodyProducer)
-registerAdapter(_from_file, file, IBodyProducer)
-registerAdapter(_from_file, StringIO, IBodyProducer)
-registerAdapter(_from_file, BytesIO, IBodyProducer)

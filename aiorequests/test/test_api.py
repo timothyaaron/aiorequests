@@ -1,12 +1,10 @@
+import unittest
 import mock
 
-from treq.test.util import TestCase
-
-import treq
-from treq._utils import set_global_pool
+import aiorequests
 
 
-class TreqAPITests(TestCase):
+class TreqAPITests(unittest.TestCase):
     def setUp(self):
         set_global_pool(None)
 

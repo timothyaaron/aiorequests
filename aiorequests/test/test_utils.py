@@ -2,18 +2,18 @@ import mock
 
 from treq.test.util import TestCase
 
-from treq._utils import default_reactor, default_pool, set_global_pool
+from treq._utils import default_loop, default_pool, set_global_pool
 
 
 class DefaultReactorTests(TestCase):
     def test_passes_reactor(self):
         mock_reactor = mock.Mock()
 
-        self.assertEqual(default_reactor(mock_reactor), mock_reactor)
+        self.assertEqual(default_loop(mock_reactor), mock_reactor)
 
-    def test_uses_default_reactor(self):
-        from twisted.internet import reactor
-        self.assertEqual(default_reactor(None), reactor)
+    def test_uses_default_loop(self):
+        from aiorequests.internet import reactor
+        self.assertEqual(default_loop(None), reactor)
 
 
 class DefaultPoolTests(TestCase):

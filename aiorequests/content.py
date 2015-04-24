@@ -1,12 +1,7 @@
 import cgi
 import json
 
-from twisted.internet.defer import Deferred, succeed
-
-from twisted.internet.protocol import Protocol
-from twisted.web.client import ResponseDone
-from twisted.web.http import PotentialDataLoss
-
+from asyncio import Protocol
 
 def _encoding_from_headers(headers):
     content_types = headers.getRawHeaders('content-type')

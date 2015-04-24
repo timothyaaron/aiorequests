@@ -1,12 +1,9 @@
-from twisted.python.components import proxyForInterface
-from twisted.web.iweb import IResponse
-
 from requests.cookies import cookiejar_from_dict
 
-from treq.content import content, json_content, text_content
+from aiorequests.content import content, json_content, text_content
 
 
-class _Response(proxyForInterface(IResponse)):
+class _Response(object):
     def __init__(self, original, cookiejar):
         self.original = original
         self._cookiejar = cookiejar

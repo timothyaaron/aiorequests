@@ -1,32 +1,26 @@
-from StringIO import StringIO
+import unittest
+
+from io import StringIO
 
 import mock
 
-from twisted.internet.defer import Deferred, succeed, CancelledError
-from twisted.internet.protocol import Protocol
+from aiorequests.test.util import with_clock
 
-from twisted.python.failure import Failure
-
-from twisted.web.client import Agent
-from twisted.web.http_headers import Headers
-
-from treq.test.util import TestCase, with_clock
-
-from treq.client import (
+from aiorequests.client import (
     HTTPClient, _BodyBufferingProtocol, _BufferedResponse
 )
 
 
-class HTTPClientTests(TestCase):
+class HTTPClientTests(unittest.TestCase):
     def setUp(self):
         self.agent = mock.Mock(Agent)
-        self.client = HTTPClient(self.agent)
+        self.client = HTTPClient()
 
-        self.fbp_patcher = mock.patch('treq.client.FileBodyProducer')
+        self.fbp_patcher = mock.patch('aiorequests.client.FileBodyProducer')
         self.FileBodyProducer = self.fbp_patcher.start()
         self.addCleanup(self.fbp_patcher.stop)
 
-        self.mbp_patcher = mock.patch('treq.multipart.MultiPartProducer')
+        self.mbp_patcher = mock.patch('aiorequests.multipart.MultiPartProducer')
         self.MultiPartProducer = self.mbp_patcher.start()
         self.addCleanup(self.mbp_patcher.stop)
 
@@ -131,7 +125,7 @@ class HTTPClientTests(TestCase):
 
         self.assertBody('hello')
 
-    @mock.patch('treq.client.uuid.uuid4', mock.Mock(return_value="heyDavid"))
+    @mock.patch('aiorequests.client.uuid.uuid4', mock.Mock(return_value="heyDavid"))
     def test_request_no_name_attachment(self):
 
         self.client.request(
@@ -151,7 +145,7 @@ class HTTPClientTests(TestCase):
                 boundary='heyDavid'),
             self.MultiPartProducer.call_args)
 
-    @mock.patch('treq.client.uuid.uuid4', mock.Mock(return_value="heyDavid"))
+    @mock.patch('aiorequests.client.uuid.uuid4', mock.Mock(return_value="heyDavid"))
     def test_request_named_attachment(self):
 
         self.client.request(
@@ -172,7 +166,7 @@ class HTTPClientTests(TestCase):
                 boundary='heyDavid'),
             self.MultiPartProducer.call_args)
 
-    @mock.patch('treq.client.uuid.uuid4', mock.Mock(return_value="heyDavid"))
+    @mock.patch('aiorequests.client.uuid.uuid4', mock.Mock(return_value="heyDavid"))
     def test_request_named_attachment_and_ctype(self):
 
         self.client.request(
@@ -193,7 +187,7 @@ class HTTPClientTests(TestCase):
                 boundary='heyDavid'),
             self.MultiPartProducer.call_args)
 
-    @mock.patch('treq.client.uuid.uuid4', mock.Mock(return_value="heyDavid"))
+    @mock.patch('aiorequests.client.uuid.uuid4', mock.Mock(return_value="heyDavid"))
     def test_request_mixed_params(self):
 
         class NamedFile(StringIO):
@@ -225,7 +219,7 @@ class HTTPClientTests(TestCase):
                 boundary='heyDavid'),
             self.MultiPartProducer.call_args)
 
-    @mock.patch('treq.client.uuid.uuid4', mock.Mock(return_value="heyDavid"))
+    @mock.patch('aiorequests.client.uuid.uuid4', mock.Mock(return_value="heyDavid"))
     def test_request_mixed_params_dict(self):
 
         self.client.request(
@@ -330,7 +324,7 @@ class HTTPClientTests(TestCase):
         self.assertEqual(self.successResultOf(d).original, response)
 
 
-class BodyBufferingProtocolTests(TestCase):
+class BodyBufferingProtocolTests(unittest.TestCase):
     def test_buffers_data(self):
         buffer = []
         protocol = _BodyBufferingProtocol(
@@ -390,7 +384,7 @@ class BodyBufferingProtocolTests(TestCase):
         destination.connectionLost.assert_called_once_with(reason)
 
 
-class BufferedResponseTests(TestCase):
+class BufferedResponseTests(unittest.TestCase):
     def test_wraps_protocol(self):
         wrappers = []
         wrapped = mock.Mock(Protocol)
@@ -450,3 +444,7 @@ class BufferedResponseTests(TestCase):
 
         finished.dataReceived.assert_called_once_with("foo")
         finished.connectionLost.assert_called_once_with(done)
+
+
+if __name__ == '__main__':
+    unittest.main()

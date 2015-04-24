@@ -5,15 +5,10 @@ from uuid import uuid4
 from io import BytesIO
 from contextlib import closing
 
-from twisted.internet import defer, task
-from twisted.web.iweb import UNKNOWN_LENGTH, IBodyProducer
-
-from zope.interface import implementer
-
 CRLF = b"\r\n"
 
 
-@implementer(IBodyProducer)
+# @implementer(IBodyProducer)
 class MultiPartProducer(object):
     """
     L{MultiPartProducer} takes parameters for HTTP Request
@@ -52,7 +47,8 @@ class MultiPartProducer(object):
     @ivar boundary: The generated boundary used in form-data encoding
     """
 
-    def __init__(self, fields, boundary=None, cooperator=task):
+    #def __init__(self, fields, boundary=None, cooperator=task):
+    def __init__(self, fields, boundary=None, cooperator=None):
         self._fields = list(_sorted_by_type(_converted(fields)))
         self._currentProducer = None
         self._cooperate = cooperator.cooperate
