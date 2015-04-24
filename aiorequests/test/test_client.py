@@ -34,7 +34,7 @@ class HTTPClientTests(unittest.TestCase):
         self.client.request('gEt', 'http://example.com/')
         aiohttp.request.assert_called_once_with(
             'GET', 'http://example.com/',
-            headers={'accept-encoding': ['gzip']})
+            headers={'accept-encoding': ['gzip']}, data=None)
 
     def test_request_query_params(self):
         self.client.request('GET', 'http://example.com/',
@@ -42,7 +42,7 @@ class HTTPClientTests(unittest.TestCase):
 
         aiohttp.request.assert_called_once_with(
             'GET', 'http://example.com/?foo=bar',
-            headers={'accept-encoding': ['gzip']})
+            headers={'accept-encoding': ['gzip']}, data=None)
 
     def test_request_tuple_query_values(self):
         self.client.request('GET', 'http://example.com/',
@@ -50,7 +50,7 @@ class HTTPClientTests(unittest.TestCase):
 
         aiohttp.request.assert_called_once_with(
             'GET', 'http://example.com/?foo=bar',
-            headers={'accept-encoding': ['gzip']},)
+            headers={'accept-encoding': ['gzip']}, data=None)
 
     def test_request_merge_query_params(self):
         self.client.request('GET', 'http://example.com/?baz=bax',
@@ -58,7 +58,7 @@ class HTTPClientTests(unittest.TestCase):
 
         aiohttp.request.assert_called_once_with(
             'GET', 'http://example.com/?baz=bax&foo=bar&foo=baz',
-            headers={'accept-encoding': ['gzip']})
+            headers={'accept-encoding': ['gzip']}, data=None)
 
     def test_request_merge_tuple_query_params(self):
         self.client.request('GET', 'http://example.com/?baz=bax',
@@ -66,7 +66,7 @@ class HTTPClientTests(unittest.TestCase):
 
         aiohttp.request.assert_called_once_with(
             'GET', 'http://example.com/?baz=bax&foo=bar',
-            headers={'accept-encoding': ['gzip']})
+            headers={'accept-encoding': ['gzip']}, data=None)
 
     def test_request_dict_single_value_query_params(self):
         self.client.request('GET', 'http://example.com/',
@@ -74,7 +74,7 @@ class HTTPClientTests(unittest.TestCase):
 
         aiohttp.request.assert_called_once_with(
             'GET', 'http://example.com/?foo=bar',
-            headers={'accept-encoding': ['gzip']})
+            headers={'accept-encoding': ['gzip']}, data=None)
 
     def test_request_data_dict(self):
         self.client.request('POST', 'http://example.com/',

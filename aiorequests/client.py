@@ -167,13 +167,11 @@ class HTTPClient(object):
             wrapped_agent = add_auth(wrapped_agent, auth)
 
         headers['accept-encoding'] = ['gzip']
+
         d = aiohttp.request(
             method, url, headers=headers,
             data=data
         )
-        # d = wrapped_agent.request(
-        #     method, url, headers=headers,
-        #     bodyProducer=bodyProducer)
 
         timeout = kwargs.get('timeout')
         if timeout:
