@@ -4,6 +4,8 @@ from io import StringIO
 
 import mock
 
+import aiohttp
+
 from aiorequests.test.util import with_clock
 
 from aiorequests.client import (
@@ -13,8 +15,8 @@ from aiorequests.client import (
 
 class HTTPClientTests(unittest.TestCase):
     def setUp(self):
-        self.agent = mock.Mock()
-        self.client = HTTPClient(self.agent)
+        aiohttp.request = mock.Mock()
+        self.client = HTTPClient()
 
         # self.fbp_patcher = mock.patch('aiorequests.client.FileBodyProducer')
         # self.FileBodyProducer = self.fbp_patcher.start()
@@ -30,11 +32,9 @@ class HTTPClientTests(unittest.TestCase):
 
     def test_request_case_insensitive_methods(self):
         self.client.request('gEt', 'http://example.com/')
-        self.agent.request.assert_called_once_with(
-            'GET', 'http://example.com/', bodyProducer=None,
-            headers=None)
-        # TODO: add support for this:
-        # Headers({'accept-encoding': ['gzip']}), None)
+        aiohttp.request.assert_called_once_with(
+            'GET', 'http://example.com/',
+            headers={'accept-encoding': ['gzip']})
 
     def test_request_query_params(self):
         self.client.request('GET', 'http://example.com/',

@@ -6,6 +6,8 @@ from os import path
 
 from urllib.parse import urlparse, urlunparse, urlencode
 
+import aiohttp
+
 from aiorequests._utils import default_loop
 from aiorequests.auth import add_auth
 # from aiorequests import multipart
@@ -67,8 +69,8 @@ class _BufferedResponse(object):
 
 
 class HTTPClient(object):
-    def __init__(self, agent, cookiejar=None):
-        self._agent = agent
+    def __init__(self, cookiejar=None):
+        self._agent = None  # TODO: Remove. aiohttp used now
         self._cookiejar = cookiejar or cookiejar_from_dict({})
 
     def get(self, url, **kwargs):
@@ -113,8 +115,7 @@ class HTTPClient(object):
 
                 headers = h
         else:
-            # headers = Headers({})
-            pass
+            headers = {}
 
         # Here we choose a right producer
         # based on the parameters passed in.
@@ -167,9 +168,13 @@ class HTTPClient(object):
         if auth:
             wrapped_agent = add_auth(wrapped_agent, auth)
 
-        d = wrapped_agent.request(
+        headers = {'accept-encoding': ['gzip']}
+        d = aiohttp.request(
             method, url, headers=headers,
-            bodyProducer=bodyProducer)
+        )
+        # d = wrapped_agent.request(
+        #     method, url, headers=headers,
+        #     bodyProducer=bodyProducer)
 
         timeout = kwargs.get('timeout')
         if timeout:
