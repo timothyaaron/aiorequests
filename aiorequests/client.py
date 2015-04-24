@@ -103,7 +103,8 @@ class HTTPClient(object):
         headers = kwargs.get('headers')
         if headers:
             if isinstance(headers, dict):
-                h = Headers({})
+                # h = Headers({})
+                h = None
                 for k, v in headers.iteritems():
                     if isinstance(v, str):
                         h.addRawHeader(k, v)
@@ -112,7 +113,8 @@ class HTTPClient(object):
 
                 headers = h
         else:
-            headers = Headers({})
+            # headers = Headers({})
+            pass
 
         # Here we choose a right producer
         # based on the parameters passed in.
@@ -151,13 +153,15 @@ class HTTPClient(object):
 
         cookies = merge_cookies(self._cookiejar, cookies)
 
-        wrapped_agent = CookieAgent(self._agent, cookies)
+        # wrapped_agent = CookieAgent(self._agent, cookies)
 
         if kwargs.get('allow_redirects', True):
-            wrapped_agent = RedirectAgent(wrapped_agent)
+            # wrapped_agent = RedirectAgent(wrapped_agent)
+            pass
 
-        wrapped_agent = ContentDecoderAgent(wrapped_agent,
-                                            [('gzip', GzipDecoder)])
+        # wrapped_agent = ContentDecoderAgent(wrapped_agent,
+        #                                    [('gzip', GzipDecoder)])
+        wrapped_agent = self._agent
 
         auth = kwargs.get('auth')
         if auth:
