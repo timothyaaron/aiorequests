@@ -175,20 +175,21 @@ class HTTPClient(object):
 
         timeout = kwargs.get('timeout')
         if timeout:
-            delayedCall = default_loop(kwargs.get('reactor')).callLater(
+            delayed_call = default_loop(kwargs.get('reactor')).call_later(
                 timeout, d.cancel)
 
-            def gotResult(result):
-                if delayedCall.active():
-                    delayedCall.cancel()
+            def got_result(result):
+                if delayed_call.active():
+                    delayed_call.cancel()
                 return result
 
-            d.addBoth(gotResult)
+            d.add_done_callback(got_result)
 
         if not kwargs.get('unbuffered', False):
-            d.addCallback(_BufferedResponse)
+            d.add_done_callback(_BufferedResponse)
 
-        return d.addCallback(_Response, cookies)
+        return d.add_done_callback(_Response)
+        # return d.add_done_callback(_Response, cookies)
 
 
 def _convert_params(params):

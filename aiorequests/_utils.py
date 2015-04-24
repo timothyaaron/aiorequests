@@ -8,6 +8,8 @@ def default_loop(loop):
     """
     Return the specified loop or the default.
     """
+    if not loop:
+        return asyncio.get_event_loop()
     return loop
 
 

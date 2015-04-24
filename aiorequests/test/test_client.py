@@ -1,3 +1,4 @@
+import asyncio
 import unittest
 
 import os, tempfile
@@ -19,14 +20,6 @@ class HTTPClientTests(unittest.TestCase):
     def setUp(self):
         aiohttp.request = mock.Mock()
         self.client = HTTPClient()
-
-        # self.fbp_patcher = mock.patch('aiorequests.client.FileBodyProducer')
-        # self.FileBodyProducer = self.fbp_patcher.start()
-        # self.addCleanup(self.fbp_patcher.stop)
-
-        # self.mbp_patcher = mock.patch('aiorequests.multipart.MultiPartProducer')
-        # self.MultiPartProducer = self.mbp_patcher.start()
-        # self.addCleanup(self.mbp_patcher.stop)
 
     def mktemp(self):
         """Returns a unique name that may be used as either a temporary
@@ -247,14 +240,15 @@ class HTTPClientTests(unittest.TestCase):
         Verify the request is cancelled if a response is not received
         within specified timeout period.
         """
-        self.agent.request.return_value = d = Deferred()
+        aiohttp.request.return_value = f = asyncio.Future()
         self.client.request('GET', 'http://example.com', timeout=2)
 
         # simulate we haven't gotten a response within timeout seconds
         clock.advance(3)
 
         # a deferred should have been cancelled
-        self.failureResultOf(d, CancelledError)
+        # MUST assert exception
+        f.assert_called_with()
 
     @with_clock
     def test_request_timeout_cancelled(self, clock):
@@ -262,7 +256,7 @@ class HTTPClientTests(unittest.TestCase):
         Verify timeout is cancelled if a response is received before
         timeout period elapses.
         """
-        self.agent.request.return_value = d = Deferred()
+        aiohttp.request.return_value = d = Future()
         self.client.request('GET', 'http://example.com', timeout=2)
 
         # simulate a response
