@@ -142,10 +142,8 @@ class HTTPClient(object):
             # Otherwise stick to x-www-form-urlencoded format
             # as it's generally faster for smaller requests.
             if isinstance(data, (dict, list, tuple)):
-                headers.setRawHeaders(
-                    'content-type', ['application/x-www-form-urlencoded'])
+                headers['Content-Type'] = ['application/x-www-form-urlencoded']
                 data = urlencode(data, doseq=True)
-            bodyProducer = IBodyProducer(data)
 
         cookies = kwargs.get('cookies', {})
 
@@ -168,9 +166,10 @@ class HTTPClient(object):
         if auth:
             wrapped_agent = add_auth(wrapped_agent, auth)
 
-        headers = {'accept-encoding': ['gzip']}
+        headers['accept-encoding'] = ['gzip']
         d = aiohttp.request(
             method, url, headers=headers,
+            data=data
         )
         # d = wrapped_agent.request(
         #     method, url, headers=headers,

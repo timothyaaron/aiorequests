@@ -80,13 +80,10 @@ class HTTPClientTests(unittest.TestCase):
         self.client.request('POST', 'http://example.com/',
                             data={'foo': ['bar', 'baz']})
 
-        self.agent.request.assert_called_once_with(
+        aiohttp.request.assert_called_once_with(
             'POST', 'http://example.com/',
-            Headers({'Content-Type': ['application/x-www-form-urlencoded'],
-                     'accept-encoding': ['gzip']}),
-            self.FileBodyProducer.return_value)
-
-        self.assertBody('foo=bar&foo=baz')
+            headers={'Content-Type': ['application/x-www-form-urlencoded'],
+                     'accept-encoding': ['gzip']}, data='foo=bar&foo=baz')
 
     def test_request_data_single_dict(self):
         self.client.request('POST', 'http://example.com/',
