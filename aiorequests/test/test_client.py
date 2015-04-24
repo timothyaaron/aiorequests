@@ -1,5 +1,7 @@
 import unittest
 
+import os, tempfile
+
 from io import StringIO
 
 import mock
@@ -27,7 +29,7 @@ class HTTPClientTests(unittest.TestCase):
         # self.addCleanup(self.mbp_patcher.stop)
 
     def mktemp(self):
-            """Returns a unique name that may be used as either a temporary
+        """Returns a unique name that may be used as either a temporary
         directory or filename.
 
         @note: you must call os.mkdir on the value returned from this
@@ -126,13 +128,13 @@ class HTTPClientTests(unittest.TestCase):
 
         with open(temp_fn, "w") as temp_file:
             temp_file.write('hello')
-
-        self.client.request('POST', 'http://example.com/', data=file(temp_fn))
+        file = open(temp_fn)
+        self.client.request('POST', 'http://example.com/', data=file)
 
         aiohttp.request.assert_called_once_with(
             'POST', 'http://example.com/',
             headers={'accept-encoding': ['gzip']},
-            data='hello')
+            data=file)
 
     @mock.patch('aiorequests.client.uuid.uuid4', mock.Mock(return_value="heyDavid"))
     def test_request_no_name_attachment(self):
