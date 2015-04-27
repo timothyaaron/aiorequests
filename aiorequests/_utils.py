@@ -4,6 +4,8 @@ Strictly internal utilities.
 
 import asyncio
 
+from aiohttp import ClientSession
+
 def default_loop(loop):
     """
     Return the specified loop or the default.
@@ -35,9 +37,9 @@ def default_pool(loop, pool, persistent):
         return pool
 
     if persistent is False:
-        return HTTPConnectionPool(loop, persistent=persistent)
+        return ClientSession(loop)
 
     if get_global_pool() is None:
-        set_global_pool(HTTPConnectionPool(loop, persistent=True))
+        set_global_pool(ClientSession(loop))
 
     return get_global_pool()
