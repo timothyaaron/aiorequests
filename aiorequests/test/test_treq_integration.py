@@ -1,19 +1,8 @@
+import unittest
+
 from StringIO import StringIO
 
-from twisted.trial.unittest import TestCase
-from twisted.internet.defer import CancelledError, inlineCallbacks
-from twisted.internet.task import deferLater
-from twisted.internet import reactor
-from twisted.internet.tcp import Client
-
-from twisted import version as current_version
-from twisted.python.versions import Version
-
-from twisted.web.client import HTTPConnectionPool, ResponseFailed
-
-from treq.test.util import DEBUG, is_pypy
-
-import treq
+import aiorequests
 
 HTTPBIN_URL = "http://httpbin.org"
 HTTPSBIN_URL = "https://httpbin.org"
@@ -48,7 +37,7 @@ def with_baseurl(method):
     return _request
 
 
-class TreqIntegrationTests(TestCase):
+class TreqIntegrationTests(unittest.TestCase):
     baseurl = HTTPBIN_URL
     get = with_baseurl(treq.get)
     head = with_baseurl(treq.head)

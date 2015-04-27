@@ -1,11 +1,11 @@
+import unittest
+
 import mock
 
-from treq.test.util import TestCase
-
-from treq._utils import default_loop, default_pool, set_global_pool
+from aiorequests._utils import default_loop, default_pool, set_global_pool
 
 
-class DefaultReactorTests(TestCase):
+class DefaultReactorTests(unittest.TestCase):
     def test_passes_reactor(self):
         mock_reactor = mock.Mock()
 
@@ -16,7 +16,7 @@ class DefaultReactorTests(TestCase):
         self.assertEqual(default_loop(None), reactor)
 
 
-class DefaultPoolTests(TestCase):
+class DefaultPoolTests(unittest.TestCase):
     def setUp(self):
         set_global_pool(None)
 
