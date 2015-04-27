@@ -1,4 +1,5 @@
 import unittest
+import asyncio
 
 import mock
 
@@ -7,13 +8,13 @@ from aiorequests._utils import default_loop, default_pool, set_global_pool
 
 class DefaultReactorTests(unittest.TestCase):
     def test_passes_reactor(self):
-        mock_reactor = mock.Mock()
+        mock_loop = mock.Mock()
 
-        self.assertEqual(default_loop(mock_reactor), mock_reactor)
+        self.assertEqual(default_loop(mock_loop), mock_loop)
 
     def test_uses_default_loop(self):
-        from aiorequests.internet import reactor
-        self.assertEqual(default_loop(None), reactor)
+        loop = asyncio.get_event_loop()
+        self.assertEqual(default_loop(None), loop)
 
 
 class DefaultPoolTests(unittest.TestCase):
