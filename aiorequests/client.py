@@ -189,7 +189,6 @@ class HTTPClient(object):
             d.add_done_callback(_BufferedResponse)
 
         return d.add_done_callback(_Response)
-        # return d.add_done_callback(_Response, cookies)
 
 
 def _convert_params(params):
