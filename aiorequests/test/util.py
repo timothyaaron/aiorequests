@@ -6,6 +6,7 @@ import mock
 
 import aiorequests
 
+# TODO: Change later
 DEBUG = os.getenv("TREQ_DEBUG", False) == "true"
 
 is_pypy = platform.python_implementation() == 'PyPy'
@@ -25,17 +26,11 @@ class Clock(object):
         self.calls = []
 
     def _sort_calls(self):
-        self.calls.sort(key=lambda a: a.get_time())
+        self.calls.sort(key=lambda a: a.time)
 
     def call_later(self, when, what, *a, **kw):
-        dc = asyncio.Handle(self.time() + when,
-                            what, a, kw,
-                            self.calls.remove,
-                            lambda c: None,
-                            self.time)
-        self.calls.append(dc)
-        self._sortCalls()
-        return dc
+        self.calls.append((what, a))
+        return mock.MagicMock()
 
     def call_at(self, when, callback, *args):
         pass
@@ -44,9 +39,13 @@ class Clock(object):
         return self.right_now
 
     def advance(self, amount):
+        """Right now, it executes the next task. The amount is ignored.
+
+        """
+        call, args = self.calls.pop(0)
+        call(*args)
+
         self.right_now += amount
-        self._sort_calls()
-        while self.calls and self.calls[0].getTime
 
     def pump(self, timings):
         pass

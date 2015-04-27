@@ -240,7 +240,7 @@ class HTTPClientTests(unittest.TestCase):
         Verify the request is cancelled if a response is not received
         within specified timeout period.
         """
-        aiohttp.request.return_value = f = asyncio.Future()
+        aiohttp.request.return_value = f = mock.MagicMock()
         self.client.request('GET', 'http://example.com', timeout=2)
 
         # simulate we haven't gotten a response within timeout seconds
@@ -248,7 +248,7 @@ class HTTPClientTests(unittest.TestCase):
 
         # a deferred should have been cancelled
         # MUST assert exception
-        f.assert_called_with()
+        f.cancel.assert_called_with()
 
     @with_clock
     def test_request_timeout_cancelled(self, clock):
