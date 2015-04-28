@@ -57,9 +57,12 @@ class HTTPClientTests(unittest.TestCase):
 
     @async_test
     def test_request_with_auth(self):
-        resp = yield from self.client.request('GET', 'http://example.com')
+        resp = yield from self.client.request('GET', 'http://example.com/',
+                                              auth=('a', 'b'))
         aiohttp.request.assert_called_once_with(
-            'GET', 'http://example.com/'
+            'GET', 'http://example.com/', allow_redirects=True,
+            headers={'accept-encoding': 'gzip'},
+            auth=aiohttp.helpers.BasicAuth('a', 'b')
         )
 
     def test_request_case_insensitive_methods(self):

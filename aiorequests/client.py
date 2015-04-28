@@ -163,20 +163,22 @@ class HTTPClient(object):
         loop = asyncio.get_event_loop()
         timeout = kwargs.get('timeout')
 
-        if auth:
-            r = yield from asyncio.wait_for(loop.create_task(aiohttp.request(
-                method, url, auth=auth,
-                allow_redirects=allow_redirects,
-                headers=headers,
-                data=data)), timeout)
-        else:
-            r = yield from asyncio.wait_for(loop.create_task(aiohttp.request(
-                method, url,
-                allow_redirects=allow_redirects,
-                headers=headers,
-                data=data)), timeout)
+        request_args = {
+            'auth': auth,
+            'allow_redirects': allow_redirects,
+            'headers': headers,
+            'data': data
+        }
 
-        return _Response(r, cookies)
+        for k in list(request_args.keys()):
+            if not request_args[k]:
+                request_args.pop(k)
+
+        resp = yield from asyncio.wait_for(loop.create_task(aiohttp.request(
+            method, url, **request_args)), timeout)
+
+
+        return _Response(resp, cookies)
 
 def _convert_params(params):
     if hasattr(params, "items"):
