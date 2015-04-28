@@ -105,20 +105,17 @@ class HTTPClient(object):
         # twisted raw headers format.
         headers = kwargs.get('headers')
         if headers:
-            if isinstance(headers, dict):
-                h = {}
-                for k, v in headers.items():
-                    if isinstance(v, str):
-                        if k in h:
-                            h[k].append(v)
-                        else:
-                            h[k] = [v]
-                    else:
-                        h[k] = v
-
-                headers = h
+            _headers = []
+            for key, val in headers.items():
+                if isinstance(val, list):
+                    for v in val:
+                        _headers.append((key, v))
+                else:
+                    _headers.append((key, val))
+            headers = _headers
         else:
             headers = {}
+
 
         # Here we choose a right producer
         # based on the parameters passed in.
@@ -165,14 +162,19 @@ class HTTPClient(object):
 
         auth = kwargs.get('auth')
         if auth:
-            wrapped_agent = add_auth(wrapped_agent, auth)
+            auth = aiohttp.helpers.BasicAuth(*auth)
+        else:
+            auth = None
 
-        headers['accept-encoding'] = 'gzip'
+        if isinstance(headers, dict):
+            headers['accept-encoding'] = 'gzip'
+        else:
+            headers.append(('accept-encoding', 'gzip'))
         loop = asyncio.get_event_loop()
         timeout = kwargs.get('timeout')
 
         r = yield from asyncio.wait_for(loop.create_task(aiohttp.request(
-            method, url,
+            method, url, auth=auth,
             headers=headers,
             data=data)), timeout)
 

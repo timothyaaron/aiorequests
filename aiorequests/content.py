@@ -102,5 +102,4 @@ def text_content(response, encoding='ISO-8859-1'):
     :rtype: Deferred that fires with a unicode.
     """
     text = yield from response.content.read()
-    print('text is', text)
     return text

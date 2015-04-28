@@ -1,16 +1,16 @@
+import asyncio
 import json
 
-from twisted.internet.task import react
 from _utils import print_response
 
-import treq
+import aiorequests
 
 
-def main(reactor, *args):
-    d = treq.post('http://httpbin.org/post',
-                  json.dumps({"msg": "Hello!"}),
-                  headers={'Content-Type': ['application/json']})
-    d.addCallback(print_response)
-    return d
+def main(*args):
+    r = yield from aiorequests.post(
+        'http://httpbin.org/post',
+        json.dumps({'msg': 'Hello'}),
+        headers={'Content-Type': 'application/json'})
+    print((yield from r.text()))
 
-react(main, [])
+asyncio.get_event_loop().run_until_complete(main())
