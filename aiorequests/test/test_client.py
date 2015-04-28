@@ -84,19 +84,21 @@ class HTTPClientTests(unittest.TestCase):
     @async_test
     def test_request_merge_query_params(self):
         yield from self.client.request('GET', 'http://example.com/?baz=bax',
-                                       params={'foo[]': ['bar', 'baz']})
+                                       params={'foo': ['bar', 'baz']})
 
         aiohttp.request.assert_called_once_with(
             'GET', 'http://example.com/?baz=bax&foo%5B%5D=bar&foo%5B%5D=baz',
             headers={'accept-encoding': 'gzip'})
 
+    @async_test
     def test_request_merge_tuple_query_params(self):
-        self.client.request('GET', 'http://example.com/?baz=bax',
-                            params=[('foo', 'bar')])
+        yield from self.client.request('GET',
+                                       'http://example.com/?baz=bax',
+                                       params=[('foo', 'bar')])
 
         aiohttp.request.assert_called_once_with(
             'GET', 'http://example.com/?baz=bax&foo=bar',
-            headers={'accept-encoding': ['gzip']}, data=None)
+            headers={'accept-encoding': 'gzip'})
 
     def test_request_dict_single_value_query_params(self):
         self.client.request('GET', 'http://example.com/',
