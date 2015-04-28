@@ -165,7 +165,7 @@ class HTTPClient(object):
 
         request_args = {
             'auth': auth,
-            'allow_redirects': allow_redirects,
+            'allow_redirects': allow_redirects if not allow_redirects else None,
             'headers': headers,
             'data': data
         }
