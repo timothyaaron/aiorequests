@@ -1,28 +1,30 @@
-treq
-====
+aiorequests
+===========
 
 |build|_
 
-``treq`` is an HTTP library inspired by
+``aiorequests`` is an HTTP library inspired by
 `requests <http://www.python-requests.org>`_ but written on top of
-`Twisted <http://www.twistedmatrix.com>`_'s
-`Agents <http://twistedmatrix.com/documents/current/api/twisted.web.client.Agent.html>`_.
+`asyncio <http://www.twistedmatrix.com>`_'s
+
+aiorequests is based on treq, the requests API for twisted.
 
 It provides a simple, higher level API for making HTTP requests when
 using Twisted.
 
 .. code-block:: python
 
-    >>> from treq import get
+    >>> from aiorequests import get
 
-    >>> def done(response):
-    ...     print response.code
+    >>> def main():
+    ...     resp = yield from get("http://www.github.com")
+    ...     resp.original.status
     ...     reactor.stop()
 
-    >>> get("http://www.github.com").addCallback(done)
+    >>>
 
-    >>> from twisted.internet import reactor
-    >>> reactor.run()
+    >>> from aysncio imoprt get_event_loop
+    >>> get_event_loop().run_until_complete(main())
     200
 
 For more info `read the docs <http://treq.readthedocs.org>`_.
@@ -30,43 +32,6 @@ For more info `read the docs <http://treq.readthedocs.org>`_.
 Contribute
 ==========
 
-``treq`` is hosted on `GitHub <http://github.com/dreid/treq>`_.
+``aiorequests`` is hosted on `GitHub <http://github.com/jsandovalc/aiorequests>`_.
 
 Feel free to fork and send contributions over.
-
-Developing
-==========
-
-Install dependencies:
-
-::
-
-    pip install -r requirements-dev.txt
-
-Optionally install PyOpenSSL:
-
-::
-
-    pip install PyOpenSSL
-
-Run Tests (unit & integration):
-
-::
-
-    trial treq
-
-Lint:
-
-::
-
-    pep8 treq
-    pyflakes treq
-
-Build docs:
-
-::
-
-    cd docs; make html
-
-.. |build| image:: https://secure.travis-ci.org/dreid/treq.png?branch=master
-.. _build: http://travis-ci.org/dreid/treq
