@@ -16,9 +16,23 @@ from aiorequests.client import (
 )
 
 
+def async_test(f):
+    def wrapper(*args, **kwargs):
+        coro = asyncio.coroutine(f)
+        future = coro(*args, **kwargs)
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(future)
+    return wrapper
+
 class HTTPClientTests(unittest.TestCase):
     def setUp(self):
-        aiohttp.request = mock.Mock()
+        f = asyncio.Future()
+        f.set_result(mock.MagicMock())
+        aiohttp.request = mock.MagicMock()
+        aiohttp.request.return_value = f
+        asyncio.coroutines.iscoroutine = mock.MagicMock()
+        asyncio.coroutines.iscoroutine.return_value = True
+
         self.client = HTTPClient()
 
     def mktemp(self):
@@ -40,6 +54,13 @@ class HTTPClientTests(unittest.TestCase):
     def assertBody(self, expected):
         body = self.FileBodyProducer.mock_calls[0][1][0]
         self.assertEqual(body.read(), expected)
+
+    @async_test
+    def test_request_with_auth(self):
+        resp = yield from self.client.request('GET', 'http://example.com')
+        aiohttp.request.assert_called_once_with(
+            'GET', 'http://example.com/'
+        )
 
     def test_request_case_insensitive_methods(self):
         self.client.request('gEt', 'http://example.com/')

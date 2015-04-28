@@ -12,7 +12,6 @@ import aiohttp
 
 from aiorequests._utils import default_loop
 from aiorequests.auth import add_auth
-# from aiorequests import multipart
 from aiorequests.response import _Response
 
 from http.cookiejar import CookieJar
@@ -164,12 +163,18 @@ class HTTPClient(object):
         loop = asyncio.get_event_loop()
         timeout = kwargs.get('timeout')
 
-        request = aiohttp.request
-        r = yield from asyncio.wait_for(loop.create_task(aiohttp.request(
-            method, url, auth=auth,
-            allow_redirects=allow_redirects,
-            headers=headers,
-            data=data)), timeout)
+        if auth:
+            r = yield from asyncio.wait_for(loop.create_task(aiohttp.request(
+                method, url, auth=auth,
+                allow_redirects=allow_redirects,
+                headers=headers,
+                data=data)), timeout)
+        else:
+            r = yield from asyncio.wait_for(loop.create_task(aiohttp.request(
+                method, url,
+                allow_redirects=allow_redirects,
+                headers=headers,
+                data=data)), timeout)
 
         return _Response(r, cookies)
 
