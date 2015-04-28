@@ -18,16 +18,16 @@ def todo_relative_redirect(test_method):
     return test_method
 
 
-@inlineCallbacks
+@asyncio.coroutine
 def print_response(response):
     if DEBUG:
-        print
-        print '---'
-        print response.code
-        print response.headers
-        text = yield treq.text_content(response)
-        print text
-        print '---'
+        print()
+        print('---')
+        print(response.code)
+        print(response.headers)
+        text = yield from aiorequests.text_content(response)
+        print(text)
+        print('---')
 
 
 def with_baseurl(method):
@@ -37,14 +37,14 @@ def with_baseurl(method):
     return _request
 
 
-class TreqIntegrationTests(unittest.TestCase):
+class AiorequestsIntegrationTests(unittest.TestCase):
     baseurl = HTTPBIN_URL
-    get = with_baseurl(treq.get)
-    head = with_baseurl(treq.head)
-    post = with_baseurl(treq.post)
-    put = with_baseurl(treq.put)
-    patch = with_baseurl(treq.patch)
-    delete = with_baseurl(treq.delete)
+    get = with_baseurl(aiorequests.get)
+    head = with_baseurl(aiorequests.head)
+    post = with_baseurl(aiorequests.post)
+    put = with_baseurl(aiorequests.put)
+    patch = with_baseurl(aiorequests.patch)
+    delete = with_baseurl(aiorequests.delete)
 
     def setUp(self):
         self.pool = HTTPConnectionPool(reactor, False)
@@ -62,86 +62,86 @@ class TreqIntegrationTests(unittest.TestCase):
 
         return self.pool.closeCachedConnections().addBoth(_check_fds)
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def assert_data(self, response, expected_data):
-        body = yield treq.json_content(response)
+        body = yield from aiorequests.json_content(response)
         self.assertIn('data', body)
         self.assertEqual(body['data'], expected_data)
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def assert_sent_header(self, response, header, expected_value):
-        body = yield treq.json_content(response)
+        body = yield from aiorequests.json_content(response)
         self.assertIn(header, body['headers'])
         self.assertEqual(body['headers'][header], expected_value)
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_get(self):
-        response = yield self.get('/get')
+        response = yield from self.get('/get')
         self.assertEqual(response.code, 200)
-        yield print_response(response)
+        yield from print_response(response)
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_get_headers(self):
-        response = yield self.get('/get', {'X-Blah': ['Foo', 'Bar']})
+        response = yield from self.get('/get', {'X-Blah': ['Foo', 'Bar']})
         self.assertEqual(response.code, 200)
-        yield self.assert_sent_header(response, 'X-Blah', 'Foo,Bar')
-        yield print_response(response)
+        yield from self.assert_sent_header(response, 'X-Blah', 'Foo,Bar')
+        yield from print_response(response)
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_get_302_absolute_redirect(self):
-        response = yield self.get(
+        response = yield from self.get(
             '/redirect-to?url={0}/get'.format(self.baseurl))
         self.assertEqual(response.code, 200)
-        yield print_response(response)
+        yield from print_response(response)
 
     @todo_relative_redirect
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_get_302_relative_redirect(self):
-        response = yield self.get('/relative-redirect/1')
+        response = yield from self.get('/relative-redirect/1')
         self.assertEqual(response.code, 200)
-        yield print_response(response)
+        yield from print_response(response)
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_get_302_redirect_disallowed(self):
-        response = yield self.get('/redirect/1', allow_redirects=False)
+        response = yield from self.get('/redirect/1', allow_redirects=False)
         self.assertEqual(response.code, 302)
-        yield print_response(response)
+        yield from print_response(response)
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_head(self):
-        response = yield self.head('/get')
-        body = yield treq.content(response)
+        response = yield from self.head('/get')
+        body = yield from aiorequests.content(response)
         self.assertEqual('', body)
-        yield print_response(response)
+        yield from print_response(response)
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_head_302_absolute_redirect(self):
-        response = yield self.head(
+        response = yield from self.head(
             '/redirect-to?url={0}/get'.format(self.baseurl))
         self.assertEqual(response.code, 200)
-        yield print_response(response)
+        yield from print_response(response)
 
     @todo_relative_redirect
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_head_302_relative_redirect(self):
-        response = yield self.head('/relative-redirect/1')
+        response = yield from self.head('/relative-redirect/1')
         self.assertEqual(response.code, 200)
-        yield print_response(response)
+        yield from print_response(response)
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_head_302_redirect_disallowed(self):
-        response = yield self.head('/redirect/1', allow_redirects=False)
+        response = yield from self.head('/redirect/1', allow_redirects=False)
         self.assertEqual(response.code, 302)
-        yield print_response(response)
+        yield from print_response(response)
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_post(self):
-        response = yield self.post('/post', 'Hello!')
+        response = yield from self.post('/post', 'Hello!')
         self.assertEqual(response.code, 200)
-        yield self.assert_data(response, 'Hello!')
-        yield print_response(response)
+        yield from self.assert_data(response, 'Hello!')
+        yield from print_response(response)
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_multipart_post(self):
         class FileLikeObject(StringIO):
             def __init__(self, val):
@@ -151,100 +151,100 @@ class TreqIntegrationTests(unittest.TestCase):
             def read(*args, **kwargs):
                 return StringIO.read(*args, **kwargs)
 
-        response = yield self.post(
+        response = yield from self.post(
             '/post',
             data={"a": "b"},
             files={"file1": FileLikeObject("file")})
         self.assertEqual(response.code, 200)
 
-        body = yield treq.json_content(response)
+        body = yield from aiorequests.json_content(response)
         self.assertEqual('b', body['form']['a'])
         self.assertEqual('file', body['files']['file1'])
-        yield print_response(response)
+        yield from print_response(response)
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_post_headers(self):
-        response = yield self.post(
+        response = yield from self.post(
             '/post',
             '{msg: "Hello!"}',
             headers={'Content-Type': ['application/json']}
         )
 
         self.assertEqual(response.code, 200)
-        yield self.assert_sent_header(
+        yield from self.assert_sent_header(
             response, 'Content-Type', 'application/json')
-        yield self.assert_data(response, '{msg: "Hello!"}')
-        yield print_response(response)
+        yield from self.assert_data(response, '{msg: "Hello!"}')
+        yield from print_response(response)
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_put(self):
-        response = yield self.put('/put', data='Hello!')
-        yield print_response(response)
+        response = yield from self.put('/put', data='Hello!')
+        yield from print_response(response)
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_patch(self):
-        response = yield self.patch('/patch', data='Hello!')
+        response = yield from self.patch('/patch', data='Hello!')
         self.assertEqual(response.code, 200)
-        yield self.assert_data(response, 'Hello!')
-        yield print_response(response)
+        yield from self.assert_data(response, 'Hello!')
+        yield from print_response(response)
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_delete(self):
-        response = yield self.delete('/delete')
+        response = yield from self.delete('/delete')
         self.assertEqual(response.code, 200)
-        yield print_response(response)
+        yield from print_response(response)
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_gzip(self):
-        response = yield self.get('/gzip')
+        response = yield from self.get('/gzip')
         self.assertEqual(response.code, 200)
-        yield print_response(response)
-        json = yield treq.json_content(response)
+        yield from print_response(response)
+        json = yield from aiorequests.json_content(response)
         self.assertTrue(json['gzipped'])
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_basic_auth(self):
-        response = yield self.get('/basic-auth/treq/treq',
+        response = yield from self.get('/basic-auth/treq/treq',
                                   auth=('treq', 'treq'))
         self.assertEqual(response.code, 200)
-        yield print_response(response)
-        json = yield treq.json_content(response)
+        yield from print_response(response)
+        json = yield from aiorequests.json_content(response)
         self.assertTrue(json['authenticated'])
         self.assertEqual(json['user'], 'treq')
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_failed_basic_auth(self):
-        response = yield self.get('/basic-auth/treq/treq',
+        response = yield from self.get('/basic-auth/treq/treq',
                                   auth=('not-treq', 'not-treq'))
         self.assertEqual(response.code, 401)
-        yield print_response(response)
+        yield from print_response(response)
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_timeout(self):
         """
         Verify a timeout fires if a request takes too long.
         """
-        yield self.assertFailure(self.get('/delay/2', timeout=1),
+        yield from self.assertFailure(self.get('/delay/2', timeout=1),
                                  CancelledError,
                                  ResponseFailed)
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_cookie(self):
-        response = yield self.get('/cookies', cookies={'hello': 'there'})
+        response = yield from self.get('/cookies', cookies={'hello': 'there'})
         self.assertEqual(response.code, 200)
-        yield print_response(response)
-        json = yield treq.json_content(response)
+        yield from print_response(response)
+        json = yield from aiorequests.json_content(response)
         self.assertEqual(json['cookies']['hello'], 'there')
 
-    @inlineCallbacks
+    @asyncio.coroutine
     def test_set_cookie(self):
-        response = yield self.get('/cookies/set',
+        response = yield from self.get('/cookies/set',
                                   allow_redirects=False,
                                   params={'hello': 'there'})
         #self.assertEqual(response.code, 200)
-        yield print_response(response)
+        yield from print_response(response)
         self.assertEqual(response.cookies()['hello'], 'there')
 
 
-class HTTPSTreqIntegrationTests(TreqIntegrationTests):
+class HTTPSAiorequestsIntegrationTests(AiorequestsIntegrationTests):
     baseurl = HTTPSBIN_URL

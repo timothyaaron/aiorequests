@@ -164,6 +164,7 @@ class HTTPClient(object):
         loop = asyncio.get_event_loop()
         timeout = kwargs.get('timeout')
 
+        request = aiohttp.request
         r = yield from asyncio.wait_for(loop.create_task(aiohttp.request(
             method, url, auth=auth,
             allow_redirects=allow_redirects,
@@ -219,7 +220,6 @@ def _combine_query_params(url, params):
     parsed_url = urlparse(url)
 
     qs = []
-
     if parsed_url.query:
         qs.extend([parsed_url.query, '&'])
 

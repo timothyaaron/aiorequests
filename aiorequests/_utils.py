@@ -6,6 +6,7 @@ import asyncio
 
 from aiohttp import ClientSession
 
+# TODO: Are these functions needed? asyncio implementes something similar
 def default_loop(loop):
     """
     Return the specified loop or the default.

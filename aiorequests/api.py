@@ -106,8 +106,4 @@ def request(method, url, **kwargs):
 #
 
 def _client(*args, **kwargs):
-    loop = default_loop(kwargs.get('reactor'))
-    pool = default_pool(loop,
-                        kwargs.get('pool'),
-                        kwargs.get('persistent'))
     return HTTPClient()

@@ -7,7 +7,8 @@ aiorequests
 `requests <http://www.python-requests.org>`_ but written on top of
 `asyncio <http://www.twistedmatrix.com>`_'s
 
-aiorequests is based on treq, the requests API for twisted.
+aiorequests is based on `treq <http://github.com/dred/treq>` , the
+requests API for twisted.
 
 It provides a simple, higher level API for making HTTP requests when
 using Twisted.
@@ -18,7 +19,7 @@ using Twisted.
 
     >>> def main():
     ...     resp = yield from get("http://www.github.com")
-    ...     resp.original.status
+    ...     resp.original.status<
     ...     reactor.stop()
 
     >>>

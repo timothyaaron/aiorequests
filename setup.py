@@ -1,6 +1,11 @@
 from setuptools import find_packages, setup
 import os.path
 
+with open(os.path.join(
+        os.path.dirname(__file__),
+        "aiorequests", "_version")) as ver:
+    __version__ = ver.readline().strip()
+
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
