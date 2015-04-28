@@ -1,13 +1,14 @@
-from twisted.internet.task import react
+import asyncio
+import json
+from _utils import print_response
 
-import treq
+import aiorequests
 
+def download_file(*args):
+    url, destination_filename = 'http://httpbin.org/get', 'download.txt'
+    destination = open(destination_filename, 'wb')
+    r = yield from aiorequests.get(url)
+    destination.write((yield from r.text()))
+    destination.close()
 
-def download_file(reactor, url, destination_filename):
-    destination = file(destination_filename, 'w')
-    d = treq.get(url)
-    d.addCallback(treq.collect, destination.write)
-    d.addBoth(lambda _: destination.close())
-    return d
-
-react(download_file, ['http://httpbin.org/get', 'download.txt'])
+asyncio.get_event_loop().run_until_complete(download_file())

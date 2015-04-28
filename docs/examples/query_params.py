@@ -1,39 +1,40 @@
-from twisted.internet.task import react
-from twisted.internet.defer import inlineCallbacks
+import asyncio
+import json
+from _utils import print_response
 
-import treq
+import aiorequests
 
 
-@inlineCallbacks
-def main(reactor):
-    print 'List of tuples'
-    resp = yield treq.get('http://httpbin.org/get',
-                          params=[('foo', 'bar'), ('baz', 'bax')])
-    content = yield treq.content(resp)
-    print content
+@asyncio.coroutine
+def main():
+    print('List of tuples')
+    resp = yield from aiorequests.get('http://httpbin.org/get',
+                                      params=[('foo', 'bar'), ('baz', 'bax')])
+    content = yield from resp.text()
+    print(content)
 
-    print 'Single value dictionary'
-    resp = yield treq.get('http://httpbin.org/get',
+    print('Single value dictionary')
+    resp = yield from aiorequests.get('http://httpbin.org/get',
                           params={'foo': 'bar', 'baz': 'bax'})
-    content = yield treq.content(resp)
-    print content
+    content = yield from resp.text()
+    print(content)
 
-    print 'Multi value dictionary'
-    resp = yield treq.get('http://httpbin.org/get',
+    print('Multi value dictionary')
+    resp = yield from aiorequests.get('http://httpbin.org/get',
                           params={'foo': ['bar', 'baz', 'bax']})
-    content = yield treq.content(resp)
-    print content
+    content = yield from resp.text()
+    print(content)
 
-    print 'Mixed value dictionary'
-    resp = yield treq.get('http://httpbin.org/get',
+    print('Mixed value dictionary')
+    resp = yield from aiorequests.get('http://httpbin.org/get',
                           params={'foo': ['bar', 'baz'], 'bax': 'quux'})
-    content = yield treq.content(resp)
-    print content
+    content = yield from resp.text()
+    print(content)
 
-    print 'Preserved query parameters'
-    resp = yield treq.get('http://httpbin.org/get?foo=bar',
+    print('Preserved query parameters')
+    resp = yield from aiorequests.get('http://httpbin.org/get?foo=bar',
                           params={'baz': 'bax'})
-    content = yield treq.content(resp)
-    print content
+    content = yield from resp.text()
+    print(content)
 
-react(main, [])
+asyncio.get_event_loop().run_until_complete(main())
