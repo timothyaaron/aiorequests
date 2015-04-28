@@ -1,12 +1,13 @@
-from twisted.internet.task import react
+import asyncio
+import json
 from _utils import print_response
 
-import treq
+import aiorequests
 
 
-def main(reactor, *args):
-    d = treq.get('http://httpbin.org/redirect/1', allow_redirects=False)
-    d.addCallback(print_response)
-    return d
+def main(*args):
+    r = yield from aiorequests.get(
+        'http://httpbin.org/redirect/1', allow_redirects=False)
+    print(r.original.status)
 
-react(main, [])
+asyncio.get_event_loop().run_until_complete(main())

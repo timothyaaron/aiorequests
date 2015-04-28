@@ -149,16 +149,7 @@ class HTTPClient(object):
             cookies = cookiejar_from_dict(cookies)
 
         cookies = merge_cookies(self._cookiejar, cookies)
-
-        # wrapped_agent = CookieAgent(self._agent, cookies)
-
-        if kwargs.get('allow_redirects', True):
-            # wrapped_agent = RedirectAgent(wrapped_agent)
-            pass
-
-        # wrapped_agent = ContentDecoderAgent(wrapped_agent,
-        #                                    [('gzip', GzipDecoder)])
-        # wrapped_agent = self._agent
+        allow_redirects = kwargs.get('allow_redirects', True)
 
         auth = kwargs.get('auth')
         if auth:
@@ -175,6 +166,7 @@ class HTTPClient(object):
 
         r = yield from asyncio.wait_for(loop.create_task(aiohttp.request(
             method, url, auth=auth,
+            allow_redirects=allow_redirects,
             headers=headers,
             data=data)), timeout)
 
