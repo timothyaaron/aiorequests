@@ -1,5 +1,7 @@
 import mimetypes
 import uuid
+import asyncio
+import functools
 
 from io import BytesIO, StringIO
 from os import path
@@ -70,7 +72,6 @@ class _BufferedResponse(object):
 
 class HTTPClient(object):
     def __init__(self, cookiejar=None):
-        self._agent = None  # TODO: Remove. aiohttp used now
         self._cookiejar = cookiejar or cookiejar_from_dict({})
 
     def get(self, url, **kwargs):
@@ -160,36 +161,22 @@ class HTTPClient(object):
 
         # wrapped_agent = ContentDecoderAgent(wrapped_agent,
         #                                    [('gzip', GzipDecoder)])
-        wrapped_agent = self._agent
+        # wrapped_agent = self._agent
 
         auth = kwargs.get('auth')
         if auth:
             wrapped_agent = add_auth(wrapped_agent, auth)
 
-        headers['accept-encoding'] = ['gzip']
-
-        d = aiohttp.request(
-            method, url, headers=headers,
-            data=data
-        )
-
+        headers['accept-encoding'] = 'gzip'
+        loop = asyncio.get_event_loop()
         timeout = kwargs.get('timeout')
-        if timeout:
-            delayed_call = default_loop(kwargs.get('reactor')).call_later(
-                timeout, d.cancel)
 
-            def got_result(result):
-                if delayed_call.active():
-                    delayed_call.cancel()
-                return result
+        r = yield from asyncio.wait_for(loop.create_task(aiohttp.request(
+            method, url,
+            headers=headers,
+            data=data)), timeout)
 
-            d.add_done_callback(got_result)
-
-        if not kwargs.get('unbuffered', False):
-            d.add_done_callback(_BufferedResponse)
-
-        return d.add_done_callback(_Response)
-
+        return _Response(r, cookies)
 
 def _convert_params(params):
     if hasattr(params, "items"):

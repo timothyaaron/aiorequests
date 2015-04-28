@@ -1,3 +1,4 @@
+import asyncio
 import cgi
 import json
 
@@ -73,6 +74,7 @@ def content(response):
     return d
 
 
+@asyncio.coroutine
 def json_content(response):
     """
     Read the contents of an HTTP response and attempt to decode it as JSON.
@@ -84,11 +86,11 @@ def json_content(response):
 
     :rtype: Deferred that fires with the decoded JSON.
     """
-    d = content(response)
-    d.addCallback(json.loads)
-    return d
+    json = json.loads((yield from response.content.read()))
+    return json
 
 
+@asyncio.coroutine
 def text_content(response, encoding='ISO-8859-1'):
     """
     Read the contents of an HTTP response and decode it with an appropriate
@@ -99,14 +101,6 @@ def text_content(response, encoding='ISO-8859-1'):
 
     :rtype: Deferred that fires with a unicode.
     """
-    def _decode_content(c):
-        e = _encoding_from_headers(response.headers)
-
-        if e is not None:
-            return c.decode(e)
-
-        return c.decode(encoding)
-
-    d = content(response)
-    d.addCallback(_decode_content)
-    return d
+    text = yield from response.content.read()
+    print('text is', text)
+    return text

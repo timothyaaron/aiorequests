@@ -37,9 +37,9 @@ def default_pool(loop, pool, persistent):
         return pool
 
     if persistent is False:
-        return ClientSession(loop)
+        return ClientSession()
 
     if get_global_pool() is None:
-        set_global_pool(ClientSession(loop))
+        set_global_pool(ClientSession())
 
     return get_global_pool()

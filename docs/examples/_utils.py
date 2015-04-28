@@ -1,10 +1,8 @@
-from __future__ import print_function
-
-import treq
+import aiorequests
 
 
 def print_response(response):
     print(response.code, response.phrase)
     print(response.headers)
 
-    return treq.text_content(response).addCallback(print)
+    print((yield from aiorequests.text_content(response)))
