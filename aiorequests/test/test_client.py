@@ -72,13 +72,14 @@ class HTTPClientTests(unittest.TestCase):
             'GET', 'http://example.com/',
             headers={'accept-encoding': 'gzip'})
 
+    @async_test
     def test_request_query_params(self):
-        self.client.request('GET', 'http://example.com/',
-                            params={'foo': ['bar']})
+        yield from self.client.request('GET', 'http://example.com/',
+                            params={'foo': 'bar'})
 
         aiohttp.request.assert_called_once_with(
             'GET', 'http://example.com/?foo=bar',
-            headers={'accept-encoding': ['gzip']}, data=None)
+            headers={'accept-encoding': 'gzip'})
 
     def test_request_tuple_query_values(self):
         self.client.request('GET', 'http://example.com/',
