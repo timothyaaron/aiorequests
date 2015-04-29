@@ -130,14 +130,15 @@ class HTTPClientTests(unittest.TestCase):
                      'accept-encoding': 'gzip'},
             data='foo=bar')
 
+    @async_test
     def test_request_data_tuple(self):
-        self.client.request('POST', 'http://example.com/',
-                            data=[('foo', 'bar')])
+        yield from self.client.request('POST', 'http://example.com/',
+                                       data=[('foo', 'bar')])
 
         aiohttp.request.assert_called_once_with(
             'POST', 'http://example.com/',
-            headers={'Content-Type': ['application/x-www-form-urlencoded'],
-                     'accept-encoding': ['gzip']},
+            headers={'Content-Type': 'application/x-www-form-urlencoded',
+                     'accept-encoding': 'gzip'},
             data='foo=bar')
 
     def test_request_data_file(self):
