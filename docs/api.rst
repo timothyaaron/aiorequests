@@ -1,7 +1,7 @@
 Making Requests
 ===============
 
-.. module:: treq
+.. module:: aiorequests
 
 .. autofunction:: request
 .. autofunction:: get
@@ -11,18 +11,10 @@ Making Requests
 .. autofunction:: patch
 .. autofunction:: delete
 
-Accessing Content
-=================
-
-.. autofunction:: collect
-.. autofunction:: content
-.. autofunction:: text_content
-.. autofunction:: json_content
-
 Responses
 =========
 
-.. module:: treq.response
+.. module:: aiorequests.response
 
 .. class:: Response
 
@@ -64,21 +56,8 @@ Responses
         Get a list of all responses that (such as intermediate redirects),
         that ultimately ended in the current response.
 
-        :returns: A `list` of :class:`treq.response.Response` objects.
+        :returns: A `list` of :class:`aiorquests.response.Response` objects.
 
     .. method:: cookies()
 
         :returns: A `CookieJar`.
-
-    Inherited from twisted.web.iweb.IResponse.
-
-    .. attribute:: version
-    .. attribute:: code
-    .. attribute:: phrase
-    .. attribute:: headers
-    .. attribute:: length
-    .. attribute:: request
-    .. attribute:: previousResponse
-
-    .. method:: deliverBody(protocol)
-    .. method:: setPreviousResponse(response)

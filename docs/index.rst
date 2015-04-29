@@ -1,33 +1,31 @@
-.. treq documentation master file, created by
+.. aiorequests documentation master file, created by
    sphinx-quickstart on Mon Dec 10 22:32:11 2012.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-treq: High-level Twisted HTTP Client API
+aiorequests: High-level asyncio HTTP Client API
 ========================================
 
-treq depends on ``Twisted>=12.1.0`` and optionally pyOpenSSL.
-
-All example code depends on ``Twisted>=12.3.0``.
+aiorequests depends on ``aiohttp``.
 
 Why?
 ----
 
-`requests`_ by `Kenneth Reitz`_ is a wonderful library.  I want the same
-ease of use when writing Twisted applications.  treq is not of course a
-perfect clone of `requests`.  I have tried to stay true to the do-what-i-mean
-spirit of the `requests` API and also kept the API familiar to users of
-`Twisted`_ and ``twisted.web.client.Agent`` on which treq is based.
+`requests`_ by `Kenneth Reitz`_ is a wonderful library.  I want the
+same ease of use when writing asyncio applications.  aiorequests is
+not of course a perfect clone of `requests`.  `aiorequests` is based
+on `treq` and aims to implement the request API.
 
 .. _requests: http://python-requests.org/
 .. _Kenneth Reitz: https://www.gittip.com/kennethreitz/
 .. _Twisted: http://twistedmatrix.com/
+.. _treq: https://github.com/twisted/treq
 
 Quick Start
 -----------
 Installation::
 
-    pip install treq
+    pip install aiorequests
 
 GET
 +++
@@ -51,59 +49,9 @@ Full example: :download:`basic_post.py <examples/basic_post.py>`
 Why not 100% requests-alike?
 ----------------------------
 
-Initially when I started off working on treq I thought the API should look
-exactly like `requests`_ except anything that would involve the network would
-return a ``Deferred``.
-
-Over time while attempting to mimic the `requests`_ API it became clear that
-not enough code could be shared between `requests`_ and treq for it to be worth
-the effort to translate many of the usage patterns from `requests`_.
-
-With the current version of treq I have tried to keep the API simple, yet
-remain familiar to users of Twisted and its lower-level HTTP libraries.
-
 
 Feature Parity w/ Requests
 --------------------------
-
-Even though mimicing the `requests`_ API is not a goal, supporting most of it's
-features is.  Here is a list of `requests`_ features and their status in treq.
-
-+----------------------------------+----------+----------+
-|                                  | requests |   treq   |
-+----------------------------------+----------+----------+
-| International Domains and URLs   | yes      | no       |
-+----------------------------------+----------+----------+
-| Keep-Alive & Connection Pooling  | yes      | yes      |
-+----------------------------------+----------+----------+
-| Sessions with Cookie Persistence | yes      | yes      |
-+----------------------------------+----------+----------+
-| Browser-style SSL Verification   | yes      | yes [#]_ |
-+----------------------------------+----------+----------+
-| Basic Authentication             | yes      | yes      |
-+----------------------------------+----------+----------+
-| Digest Authentication            | yes      | no       |
-+----------------------------------+----------+----------+
-| Elegant Key/Value Cookies        | yes      | yes      |
-+----------------------------------+----------+----------+
-| Automatic Decompression          | yes      | yes      |
-+----------------------------------+----------+----------+
-| Unicode Response Bodies          | yes      | yes      |
-+----------------------------------+----------+----------+
-| Multipart File Uploads           | yes      | yes      |
-+----------------------------------+----------+----------+
-| Connection Timeouts              | yes      | yes      |
-+----------------------------------+----------+----------+
-| .netrc support                   | yes      | no       |
-+----------------------------------+----------+----------+
-| Python 2.6                       | yes      | yes      |
-+----------------------------------+----------+----------+
-| Python 2.7                       | yes      | yes      |
-+----------------------------------+----------+----------+
-| Python 3.x                       | yes      | no       |
-+----------------------------------+----------+----------+
-
-.. [#] Requires ``Twisted>=14.0`` and ``service_identity``.
 
 Howto
 -----
