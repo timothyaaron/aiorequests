@@ -141,17 +141,18 @@ class HTTPClientTests(unittest.TestCase):
                      'accept-encoding': 'gzip'},
             data='foo=bar')
 
+    @async_test
     def test_request_data_file(self):
         temp_fn = self.mktemp()
 
         with open(temp_fn, "w") as temp_file:
             temp_file.write('hello')
         file = open(temp_fn)
-        self.client.request('POST', 'http://example.com/', data=file)
+        yield from self.client.request('POST', 'http://example.com/', data=file)
 
         aiohttp.request.assert_called_once_with(
             'POST', 'http://example.com/',
-            headers={'accept-encoding': ['gzip']},
+            headers={'accept-encoding': 'gzip'},
             data=file)
 
     @mock.patch('aiorequests.client.uuid.uuid4',
