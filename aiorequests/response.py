@@ -10,7 +10,10 @@ class _Response(object):
         self._cookiejar = cookiejar
 
         self.url = self.original.url
-
+        self.status_code = self.original.status
+        self.version = self.original.version
+        self.reason = self.original.reason
+        self.headers = self.original.headers
         self._encoding = None
 
     def _get_encoding(self):
