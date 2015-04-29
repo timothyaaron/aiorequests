@@ -16,7 +16,7 @@ class _Response(object):
     def _get_encoding(self):
         if self._encoding:
             return self._encoding
-        return self.original._get_encoding()
+        return self.original._get_encoding('utf-8')
 
     def _set_encoding(self, encoding):
         self._encoding = encoding
@@ -24,12 +24,16 @@ class _Response(object):
     encoding = property(_get_encoding, _set_encoding)
 
     def content(self):
-        return content(self.original)
+        return (yield from self.original.read())
 
     def json(self, *args, **kwargs):
+        if 'encoding' not in kwargs:
+            kwargs['encoding'] = self.encoding
         return (yield from self.original.json(*args, **kwargs))
 
     def text(self, *args, **kwargs):
+        if 'encoding' not in kwargs:
+            kwargs['encoding'] = self.encoding
         return (yield from self.original.text(*args, **kwargs))
 
     def history(self):
