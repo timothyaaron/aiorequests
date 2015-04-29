@@ -19,7 +19,6 @@ classifiers = [
 with open('README.rst') as f:
     readme = f.read()
 
-
 setup(
     name="aiorequests",
     version=__version__,
@@ -27,7 +26,7 @@ setup(
     install_requires=[
         "aiohttp", "requests",
     ],
-    package_data={"treq": ["_version"]},
+    package_data={"aiorequests": ["_version"]},
     author="Jonathan Sandoval",
     author_email="jsandoval@utp.edu.co",
     classifiers=classifiers,
