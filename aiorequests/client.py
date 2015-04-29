@@ -139,7 +139,7 @@ class HTTPClient(object):
             # Otherwise stick to x-www-form-urlencoded format
             # as it's generally faster for smaller requests.
             if isinstance(data, (dict, list, tuple)):
-                headers['Content-Type'] = ['application/x-www-form-urlencoded']
+                headers['Content-Type'] = 'application/x-www-form-urlencoded'
                 data = urlencode(data, doseq=True)
 
         cookies = kwargs.get('cookies', {})
