@@ -19,7 +19,7 @@ using Twisted.
 
     >>> def main():
     ...     resp = yield from get("http://www.github.com")
-    ...     resp.original.status<
+    ...     resp.status
     ...     reactor.stop()
 
     >>>
