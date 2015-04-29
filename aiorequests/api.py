@@ -8,7 +8,7 @@ def head(url, **kwargs):
     """
     Make a ``HEAD`` request.
 
-    See :py:func:`treq.request`
+    See :py:func:`aiorequests.request`
     """
     return _client(**kwargs).head(url, **kwargs)
 
@@ -17,7 +17,7 @@ def get(url, headers=None, **kwargs):
     """
     Make a ``GET`` request.
 
-    See :py:func:`treq.request`
+    See :py:func:`aiorequests.request`
     """
     return _client(**kwargs).get(url, headers=headers, **kwargs)
 
@@ -26,7 +26,7 @@ def post(url, data=None, **kwargs):
     """
     Make a ``POST`` request.
 
-    See :py:func:`treq.request`
+    See :py:func:`aiorequests.request`
     """
     return _client(**kwargs).post(url, data=data, **kwargs)
 
@@ -35,7 +35,7 @@ def put(url, data=None, **kwargs):
     """
     Make a ``PUT`` request.
 
-    See :py:func:`treq.request`
+    See :py:func:`aiorequests.request`
     """
     return _client(**kwargs).put(url, data=data, **kwargs)
 
@@ -44,7 +44,7 @@ def patch(url, data=None, **kwargs):
     """
     Make a ``PATCH`` request.
 
-    See :py:func:`treq.request`
+    See :py:func:`aiorequests.request`
     """
     return _client(**kwargs).patch(url, data=data, **kwargs)
 
@@ -53,9 +53,18 @@ def delete(url, **kwargs):
     """
     Make a ``DELETE`` request.
 
-    See :py:func:`treq.request`
+    See :py:func:`aiorequests.request`
     """
     return _client(**kwargs).delete(url, **kwargs)
+
+
+def options(url, **kwargs):
+    """
+    Make a ``OPTIONS`` request.
+
+    See :py:func:`aiorequests.request`
+    """
+    return _client(**kwargs).options(url, **kwargs)
 
 
 def request(method, url, **kwargs):

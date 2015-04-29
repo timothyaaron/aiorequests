@@ -91,6 +91,9 @@ class HTTPClient(object):
     def delete(self, url, **kwargs):
         return self.request('DELETE', url, **kwargs)
 
+    def options(self, url, **kwargs):
+        return self.request('OPTIONS', url, **kwargs)
+
     def request(self, method, url, **kwargs):
         method = method.upper()
 
@@ -167,7 +170,8 @@ class HTTPClient(object):
             'auth': auth,
             'allow_redirects': allow_redirects if not allow_redirects else None,
             'headers': headers,
-            'data': data
+            'data': data,
+            'cookies': cookies if cookies else None
         }
 
         for k in list(request_args.keys()):
