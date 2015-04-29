@@ -16,18 +16,21 @@ class _Response(object):
     def _get_encoding(self):
         if self._encoding:
             return self._encoding
-        self.original._get_encoding()
+        return self.original._get_encoding()
 
-    encoding = property(_get_encoding)
+    def _set_encoding(self, encoding):
+        self._encoding = encoding
+
+    encoding = property(_get_encoding, _set_encoding)
 
     def content(self):
         return content(self.original)
 
     def json(self, *args, **kwargs):
-        return (yield from self.original.json())
+        return (yield from self.original.json(*args, **kwargs))
 
     def text(self, *args, **kwargs):
-        return (yield from self.original.text())
+        return (yield from self.original.text(*args, **kwargs))
 
     def history(self):
         response = self

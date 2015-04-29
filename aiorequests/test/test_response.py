@@ -24,6 +24,13 @@ class ResponseTests(unittest.TestCase):
         response = _Response(original, {})
         self.assertEqual(response.encoding, 'utf-8')
 
+    def test_set_encoding(self):
+        original = FakeResponse(200)
+        response = _Response(original, {})
+        response.encoding = 'iso-8891-1'
+        self.assertEqual(response.encoding, 'iso-8891-1')
+
+
     @unittest.skip('Until history is migrated')
     def test_history(self):
         redirect1 = FakeResponse(
