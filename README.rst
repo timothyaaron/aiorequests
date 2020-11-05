@@ -24,7 +24,7 @@ using Twisted.
 
     >>>
 
-    >>> from aysncio imoprt get_event_loop
+    >>> from aysncio import get_event_loop
     >>> get_event_loop().run_until_complete(main())
     200
 
